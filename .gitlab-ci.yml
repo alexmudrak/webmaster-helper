@@ -2,24 +2,16 @@ stages:
   - test
   - deploy
 
-variables:
-  POSTGRES_DB: postgres
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-
 services:
   - name: postgres:15.4
 
-before_script:
-  - echo "${APP_SECRET_KEY}" >> .env
-  - echo "${APP_DB_TYPE}" >> .env
-  - echo "${APP_DB_HOST}" >> .env
-  - echo "${APP_DB_PORT}" >> .env
-  - echo "${APP_DB_NAME}" >> .env
-  - echo "${APP_DB_USER}" >> .env
-  - echo "${APP_DB_PASS}" >> .env
+variables:
+  POSTGRES_DB: $APP_DB_NAME
+  POSTGRES_USER: $APP_DB_USER
+  POSTGRES_PASSWORD: $APP_DB_PASS
+  POSTGRES_HOST_AUTH_METHOD: trust
 
-job:
+lint-format-test:
   stage: test
   script:
     - apt-get update -qy
@@ -27,12 +19,34 @@ job:
     - curl -sSL https://pdm-project.org/install-pdm.py | python3 -
     - export PATH=/root/.local/bin:$PATH
     - pdm install --dev
+    - apt-get install -y postgresql-client
     - pip install pre-commit
     - pre-commit run --all-files
 
 deploy-job:
   stage: deploy
   environment: production
+  only:
+    - main
   script:
     - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+
+    - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+
+    - ssh $SSH_USER@$SSH_HOST "cd app && git pull origin master && docker-compose up -d --build"
+    - running_containers=$(ssh $SSH_USER@$SSH_HOST "docker ps --format '{{.Names}}'")
+
+    - expected_containers=("app-nginx-1" "app-backend-1" "app-celery-1" "app-postgres-1" "app-redis-1")
+
+    - |
+      for container in "${expected_containers[@]}"; do
+        if [[ "$running_containers" != *"$container"* ]]; then
+          echo "Error: Container $container is not running."
+          exit 1
+        fi
+      done
+
+    - echo "Application successfully deployed with the expected containers."
