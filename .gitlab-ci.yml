@@ -1,6 +1,6 @@
 stages:
-  - deploy
   - test
+  - deploy
 
 variables:
   POSTGRES_DB: postgres
@@ -24,7 +24,8 @@ job:
   script:
     - apt-get update -qy
     - apt-get install -y python3.11
-    - curl -sSL https://pdm-project.org/install-pdm.py | python3 -
+    - curl -sSL https://pdm-project.org/install-pdm.py | python3.11 -
+    - export PATH=/root/.local/bin:$PATH
     - pdm install --dev
     - pip install pre-commit
     - pre-commit run --all-files
