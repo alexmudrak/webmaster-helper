@@ -1,0 +1,83 @@
+version: '3.1'
+services:
+  backend:
+    build:
+      context: .
+      target: backend
+    env_file:
+      - .env
+    environment:
+      ALLOWED_HOSTS: 'frontend,nginx,localhost'
+      APP_ALLOWED_URLS: 'http://frontend:3000,https://frontend:3000,http://localhost:4173'
+      APP_DB_HOST: postgres
+      CELERY_BROKER: 'redis://redis:6379/0'
+    depends_on:
+      - postgres
+      - celery
+      - redis
+    volumes:
+      - ./src/static:/backend/static
+    command: >
+      bash -c "sleep 1 &&
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py shell -c \"from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='$ADMIN_USER').exists() or User.objects.create_superuser('$ADMIN_USER', '$ADMIN_USER@example.com', '$ADMIN_PASSWORD')\" &&
+             gunicorn --bind 0.0.0.0:8000 core.wsgi:application"
+
+  frontend:
+    build:
+      context: .
+      target: frontend
+    env_file:
+      - .env
+    environment:
+      VITE_API_URL: 'http://localhost/api'
+    volumes:
+      - ./ui/dist:/frontend/dist
+    command: >
+        bash -c "npm run build"
+
+  nginx:
+    build:
+      context: .
+      target: production
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./src/static:/www/static
+      - ./ui/dist:/www
+    depends_on:
+      - backend
+      - frontend
+
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: $APP_DB_USER
+      POSTGRES_PASSWORD: $APP_DB_PASS
+      POSTGRES_DB: $APP_DB_NAME
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./database:/var/lib/postgresql/data
+
+  celery:
+    build:
+      context: .
+      target: backend
+    env_file:
+      - .env
+    environment:
+      APP_DB_HOST: postgres
+      CELERY_BROKER: 'redis://redis:6379/0'
+    command: celery -A core worker -l info
+    depends_on:
+      - postgres
+
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379:6379'
