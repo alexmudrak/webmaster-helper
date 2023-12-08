@@ -1,0 +1,37 @@
+stages:
+  - deploy
+  - test
+
+variables:
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+
+services:
+  - name: postgres:15.4
+
+before_script:
+  - echo "${APP_SECRET_KEY}" >> .env
+  - echo "${APP_DB_TYPE}" >> .env
+  - echo "${APP_DB_HOST}" >> .env
+  - echo "${APP_DB_PORT}" >> .env
+  - echo "${APP_DB_NAME}" >> .env
+  - echo "${APP_DB_USER}" >> .env
+  - echo "${APP_DB_PASS}" >> .env
+
+job:
+  stage: test
+  script:
+    - apt-get update -qy
+    - apt-get install -y python3.11
+    - curl -sSL https://pdm-project.org/install-pdm.py | python3 -
+    - pdm install --dev
+    - pip install pre-commit
+    - pre-commit run --all-files
+
+deploy-job:
+  stage: deploy
+  environment: production
+  script:
+    - echo "Deploying application..."
+    - echo "Application successfully deployed."
