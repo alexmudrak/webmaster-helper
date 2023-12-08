@@ -24,7 +24,7 @@ job:
   script:
     - apt-get update -qy
     - apt-get install -y python3.11
-    - curl -sSL https://pdm-project.org/install-pdm.py | python3.11 -
+    - curl -sSL https://pdm-project.org/install-pdm.py | python3 -
     - export PATH=/root/.local/bin:$PATH
     - pdm install --dev
     - pip install pre-commit
