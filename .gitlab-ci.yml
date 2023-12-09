@@ -41,6 +41,8 @@ deploy-job:
 
     - expected_containers=("app-nginx-1" "app-backend-1" "app-celery-1" "app-postgres-1" "app-redis-1")
 
+    - sleep 2
+
     - |
       for container in "${expected_containers[@]}"; do
         if [[ "$running_containers" != *"$container"* ]]; then
