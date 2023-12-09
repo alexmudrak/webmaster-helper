@@ -60,7 +60,12 @@ _MANDATORY_
 ```markdown
 # MAIN
 APP_ENV=PROD              # System operating mode
+ALLOWED_HOSTS=            # Allowed hosts for BE
+APP_ALLOWED_URLS=         # Allowed request URL for CORS
 APP_SECRET_KEY=           # IMPORTANT: Encryption secret key
+
+#FRONTEND
+API_URL=                  # Url of BE service
 
 # DATABASE
 APP_DB_NAME=              # Database name
