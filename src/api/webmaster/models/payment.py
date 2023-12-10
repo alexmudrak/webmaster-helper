@@ -41,4 +41,4 @@ class Payment(AbstractModel):
         return f"{self.webmaster.name} <{self.type} : {self.details}>"
 
     class Meta:
-        db_table = "payment"
+        db_table = "payments"
