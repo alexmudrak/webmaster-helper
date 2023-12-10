@@ -45,8 +45,8 @@ services:
       - '80:80'
     volumes:
       - ./nginx:/etc/nginx/conf.d
+      - ./ui/dist:/www/ui
       - ./src/static:/www/static
-      - ./ui/dist:/www
     depends_on:
       - backend
       - frontend
