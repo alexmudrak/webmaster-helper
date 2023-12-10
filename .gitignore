@@ -162,3 +162,4 @@ cython_debug/
 *.vite*
 database
 src/static/
+ui/coverage/*
