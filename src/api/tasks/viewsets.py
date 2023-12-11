@@ -3,9 +3,11 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from api.tasks.link_check_task import get_link_check
 from api.tasks.mail_task import get_mails
 from api.tasks.seo_parse_task import get_seo_metrics
 from api.url.models import Url
+from api.webmaster.models.publish_page import PublishPage
 from mail.models import MailSettings
 
 
@@ -37,6 +39,10 @@ class TasksViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=["GET"], url_path="get-new-mails")
     def run_collect_new_mails(self, request):
+        """
+        Collect mails for all MailSettings that the last status check was
+        performed no more than 1 day ago.
+        """
         # TODO: Add permission check.
         mail_settings = MailSettings.objects.filter(
             check_date__lt=timezone.now() - timezone.timedelta(days=1),
@@ -56,4 +62,24 @@ class TasksViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=["GET"], url_path="check-all-links")
     def run_check_all_links(self, request):
-        return Response({"task": "check-all-links"})
+        """
+        Check all published pages for the provided links on webmaster websites
+        that the last status check was performed no more than 1 day ago and
+        collect all anchors and links.
+        """
+        # TODO: Add permission check.
+        pages = PublishPage.objects.filter(
+            check_date__lt=timezone.now() - timezone.timedelta(days=1),
+        )
+
+        for obj in pages:
+            obj.check_status = "PENDING"
+            obj.save()
+            get_link_check.delay(obj.id)
+
+        return Response(
+            {
+                "task": "check-all-links",
+                "count": len(pages),
+            }
+        )
