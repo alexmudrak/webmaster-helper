@@ -1,4 +1,5 @@
 from celery import shared_task
+from django.utils import timezone
 
 from api.url.models import Url
 from seo_parser.parser import start_parser
@@ -21,5 +22,6 @@ def get_seo_metrics(url_id: str) -> None:
     start_parser(url)
 
     url.seo_check_status = "DONE"
+    url.seo_check_date = timezone.now()
     url.save()
     logger.info(f"Finish collect SEO data for `{url}`.")
