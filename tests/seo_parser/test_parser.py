@@ -14,7 +14,9 @@ from seo_parser.parser import start_parser
 def test_start_parser(
     mock_seo_sites, mock_request_client, mock_browser_client
 ):
-    url_obj = Url.objects.create(url="http://example.com", seo_status="DONE")
+    url_obj = Url.objects.create(
+        url="http://example.com", seo_check_status="DONE"
+    )
 
     mock_obj = MagicMock()
     mock_obj.return_value.parse_data.return_value = {

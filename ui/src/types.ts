@@ -95,7 +95,7 @@ interface UserLocalData {
 interface Url {
   id: string
   url: string
-  seo_status: string | null
+  seo_check_status: string | null
 }
 
 interface SeoData {

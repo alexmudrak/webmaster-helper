@@ -78,7 +78,8 @@ class TestWebsiteViewSet:
         assert response.data["site"]["id"] == mock_website.url.public_id.hex
         assert response.data["site"]["url"] == mock_website.url.url
         assert (
-            response.data["site"]["seo_status"] == mock_website.url.seo_status
+            response.data["site"]["seo_check_status"]
+            == mock_website.url.seo_check_status
         )
 
     def test_create_website_by_owner(

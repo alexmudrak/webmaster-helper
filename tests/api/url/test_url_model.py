@@ -16,10 +16,10 @@ class TestUrlModel:
         url = "https://example.com"
         seo_status = "IN_PROGRESS"
         # Act
-        created_url = Url.objects.create(url=url, seo_status=seo_status)
+        created_url = Url.objects.create(url=url, seo_check_status=seo_status)
         # Assert
         assert created_url.url == url
-        assert created_url.seo_status == seo_status
+        assert created_url.seo_check_status == seo_status
         assert created_url.domain == "example.com"
 
     def test_create_duplicate_url(self):
@@ -33,10 +33,10 @@ class TestUrlModel:
         url = "https://example.com"
         seo_status = "IN_PROGRESS"
         # Act
-        Url.objects.create(url=url, seo_status=seo_status)
+        Url.objects.create(url=url, seo_check_status=seo_status)
         # Assert
         with pytest.raises(IntegrityError):
-            Url.objects.create(url=url, seo_status=seo_status)
+            Url.objects.create(url=url, seo_check_status=seo_status)
 
     def test_get_object_by_domain(self):
         """
@@ -47,7 +47,7 @@ class TestUrlModel:
         # Arrange
         url = "https://example.com"
         seo_status = "IN_PROGRESS"
-        created_url = Url.objects.create(url=url, seo_status=seo_status)
+        created_url = Url.objects.create(url=url, seo_check_status=seo_status)
         # Act
         retrieved_url = Url.objects.get_object_by_domain(domain="example.com")
         # Assert

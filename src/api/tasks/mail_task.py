@@ -1,4 +1,5 @@
 from celery import shared_task
+from django.utils import timezone
 from django.utils.timezone import timedelta
 
 from api.project.models import Project
@@ -26,6 +27,7 @@ def get_mails(settings_id: int):
     mail_app.start_collect_mail_messages(start_collect_date)
 
     settings.check_status = "DONE"
+    settings.check_date = timezone.now()
     settings.save()
     logger.info(f"Finish collecting mails for {settings.smtp_username}")
 

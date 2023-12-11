@@ -23,7 +23,7 @@ class TestLinkCheckTask:
         Then it should initiate the SEO metrics collection process using
         start_parser.
         After the SEO metrics collection is complete, it should update the Url
-        object's seo_status to "DONE".
+        object's seo_check_status to "DONE".
         """
         # Arrange
         url_id = str(mock_url.id)
@@ -33,4 +33,4 @@ class TestLinkCheckTask:
         # Assert
         mock_start_parser.assert_called_once_with(mock_url)
         mock_url.refresh_from_db()
-        assert mock_url.seo_status == "DONE"
+        assert mock_url.seo_check_status == "DONE"

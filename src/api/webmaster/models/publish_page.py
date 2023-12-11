@@ -31,8 +31,8 @@ class PublishPage(AbstractModel):
     )
     publish_date = models.DateField(default=timezone.now)
     # TODO: Add enum for statuses
-    check_status = models.CharField(max_length=255, null=True, default=None)
     check_date = models.DateField(null=True, blank=True)
+    check_status = models.CharField(max_length=255, null=True, default=None)
 
     objects = WebmasterManager()
 

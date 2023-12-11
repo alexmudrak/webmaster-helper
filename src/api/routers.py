@@ -8,6 +8,7 @@ from api.auth.viewsets import (
 )
 from api.mail_box.viewsets import MailBoxViewSet
 from api.project.viewsets import ProjectViewSet
+from api.tasks.viewsets import TasksViewSet
 from api.user.viewsets import UserViewSet
 from api.webmaster.viewsets import (
     ContactHistoryViewSet,
@@ -39,6 +40,8 @@ router.register(r"publish-pages", PublishPageViewSet, basename="webmaster")
 router.register(r"url", WebsiteViewSet, basename="webmaster")
 # Mail-box
 router.register(r"mails", MailBoxViewSet, basename="mail")
+# Tasks
+router.register(r"tasks", TasksViewSet, basename="tasks")
 
 urlpatterns = [
     *router.urls,

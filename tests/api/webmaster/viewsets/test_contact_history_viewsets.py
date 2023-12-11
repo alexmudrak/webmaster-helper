@@ -106,8 +106,8 @@ class TestContactHistoryViewSet:
         )
         assert response.data["website"]["site"]["url"] == mock_website.url.url
         assert (
-            response.data["website"]["site"]["seo_status"]
-            == mock_website.url.seo_status
+            response.data["website"]["site"]["seo_check_status"]
+            == mock_website.url.seo_check_status
         )
 
     def test_create_contact_history_by_owner(

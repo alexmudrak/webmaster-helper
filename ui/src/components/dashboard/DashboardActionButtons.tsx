@@ -155,7 +155,7 @@ function DashboardActionButtons({
           delay={{ show: 250, hide: 400 }}
           overlay={renderTooltip('Check SEO metrics')}
         >
-          {object.site.seo_status !== 'DONE' ? (
+          {object.site.seo_check_status !== 'DONE' ? (
             <Button variant='success' size='sm' disabled>
               <Spinner
                 as='span'

@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from asgiref.sync import sync_to_async
 from django.db import IntegrityError, transaction
 from django.http import Http404
 from rest_framework.decorators import action
@@ -109,17 +108,17 @@ class WebsiteViewSet(AbstractViewSet):
     def seo_task(self, request, pk=None):
         try:
             obj = Url.objects.get_object_by_public_id(pk)
-            obj.seo_status = "PENDING"
+            obj.seo_check_status = "PENDING"
             obj.save()
 
             self.check_object_permissions(request, obj)
 
-            task = sync_to_async(get_seo_metrics.delay(obj.id))
+            task = get_seo_metrics.delay(obj.id)
 
             return Response(
                 {
                     "url": obj.url,
-                    "status": obj.seo_status,
+                    "status": obj.seo_check_status,
                     "task_id": task.id,
                 },
                 status=status.HTTP_202_ACCEPTED,
@@ -141,7 +140,7 @@ class WebsiteViewSet(AbstractViewSet):
                 obj.check_status = "PENDING"
                 obj.save()
 
-                task = sync_to_async(get_link_check.delay(obj.id))
+                task = get_link_check.delay(obj.id)
 
                 response_status.append(
                     {

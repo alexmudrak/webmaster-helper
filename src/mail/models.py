@@ -1,4 +1,5 @@
 from django.db import IntegrityError, models
+from django.utils import timezone
 
 from api.abstract.models import AbstarctManager, AbstractModel
 from utils.logger_handler import get_logger
@@ -67,6 +68,7 @@ class MailSettings(AbstractModel):
     imap_port = models.PositiveIntegerField(default=143)
     imap_username = models.CharField(max_length=255)
     imap_password = models.CharField(max_length=255)
+    check_date = models.DateTimeField(default=timezone.now)
     check_status = models.CharField(max_length=255, null=True, default="DONE")
 
     objects = MailManager()
