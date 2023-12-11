@@ -182,3 +182,6 @@ CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get(
     "CELERY_BROKER", "redis://localhost:6379/0"
 )
+
+# Browser headless
+BROWSER_HEADLESS = os.environ.get("BROWSER_HEADLESS", "True")

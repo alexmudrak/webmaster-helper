@@ -14,7 +14,7 @@ def start_parser(url_obj: Url) -> None:
     # TODO: Add documentation
     with RequestClient(use_proxy=True) as request:
         with BrowserClient(
-            headless=False if settings.DEBUG else True,
+            headless=settings.BROWSER_HEADLESS == "True",
             use_proxy=True,
         ) as browser:
             results = [
