@@ -2,6 +2,7 @@ from urllib.parse import urlparse
 
 from django.db import models
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from api.abstract.models import AbstarctManager, AbstractModel
 
@@ -14,7 +15,10 @@ class UrlManager(AbstarctManager):
 class Url(AbstractModel):
     url = models.URLField(max_length=255, unique=True)
     # TODO: add enum
-    seo_status = models.CharField(max_length=255, null=True, default="DONE")
+    seo_check_date = models.DateTimeField(default=timezone.now)
+    seo_check_status = models.CharField(
+        max_length=255, null=True, default="DONE"
+    )
 
     objects = UrlManager()
 

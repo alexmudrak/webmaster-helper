@@ -109,7 +109,7 @@ class WebsiteViewSet(AbstractViewSet):
     def seo_task(self, request, pk=None):
         try:
             obj = Url.objects.get_object_by_public_id(pk)
-            obj.seo_status = "PENDING"
+            obj.seo_check_status = "PENDING"
             obj.save()
 
             self.check_object_permissions(request, obj)
@@ -119,7 +119,7 @@ class WebsiteViewSet(AbstractViewSet):
             return Response(
                 {
                     "url": obj.url,
-                    "status": obj.seo_status,
+                    "status": obj.seo_check_status,
                     "task_id": task.id,
                 },
                 status=status.HTTP_202_ACCEPTED,

@@ -20,6 +20,6 @@ def get_seo_metrics(url_id: str) -> None:
     logger.info(f"Start collect SEO data for `{url}`.")
     start_parser(url)
 
-    url.seo_status = "DONE"
+    url.seo_check_status = "DONE"
     url.save()
     logger.info(f"Finish collect SEO data for `{url}`.")

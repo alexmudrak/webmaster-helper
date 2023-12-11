@@ -205,7 +205,7 @@ const emptyDashboardDataRow: DashboardDataRow = {
   site: {
     id: '',
     url: '',
-    seo_status: ''
+    seo_check_status: ''
   },
   seo_data: null,
   webmasters: [],

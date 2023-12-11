@@ -10,7 +10,7 @@ class UrlSerializer(AbstractSerializer):
         fields = [
             "id",
             "url",
-            "seo_status",
+            "seo_check_status",
         ]
 
     def validate_url(self, value: str):
