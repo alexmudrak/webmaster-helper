@@ -43,6 +43,7 @@ class RequestClient:
             proxies=proxy_data or None,
             headers=self.headers,
             timeout=10.0,
+            verify=False,
         )
         return self
 
