@@ -67,12 +67,12 @@ function ContactHistoryTable({
     },
     {
       name: 'Contact type',
-      selector: (row) => row.contact.type,
+      selector: (row) => row.contact?.type,
       width: '120px'
     },
     {
       name: 'Contact',
-      selector: (row) => row.contact.contact
+      selector: (row) => row.contact?.contact
     },
     {
       name: 'Action',
