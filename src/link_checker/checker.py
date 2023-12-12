@@ -1,7 +1,7 @@
 import urllib
 from urllib.parse import urlparse
 
-from httpx import ProxyError
+from httpx import ProxyError, ReadTimeout
 from lxml.html import fromstring
 
 from api.webmaster.models.publish_page import PublishPage
@@ -22,7 +22,10 @@ def start_checker(publish_page: PublishPage) -> int:
     with RequestClient(use_proxy=True) as request:
         try:
             logger.info(f"Trying to get information from: {page} for {url}")
-            response = request.get_client.get(page, follow_redirects=True)
+            response = request.get_client.get(
+                page,
+                follow_redirects=True,
+            )
             soup = fromstring(response.text)
             elements = soup.xpath(f"//a[contains(@href, '{url}')]")
 
@@ -43,6 +46,6 @@ def start_checker(publish_page: PublishPage) -> int:
                 f"For page: {page} LinkCheck was created - {publish_page}"
             )
             return len(elements)
-        except ProxyError as error:
+        except (ProxyError, ReadTimeout) as error:
             logger.error(f"For page: {page}. Error: {error}")
             return 0
