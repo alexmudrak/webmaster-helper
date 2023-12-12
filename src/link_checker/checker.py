@@ -1,7 +1,7 @@
 import urllib
 from urllib.parse import urlparse
 
-from httpx import ProxyError, ReadTimeout
+from httpx import ConnectError, ProxyError, ReadTimeout
 from lxml.html import fromstring
 
 from api.webmaster.models.publish_page import PublishPage
@@ -46,6 +46,6 @@ def start_checker(publish_page: PublishPage) -> int:
                 f"For page: {page} LinkCheck was created - {publish_page}"
             )
             return len(elements)
-        except (ProxyError, ReadTimeout) as error:
+        except (ProxyError, ReadTimeout, ConnectError) as error:
             logger.error(f"For page: {page}. Error: {error}")
             return 0
