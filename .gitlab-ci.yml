@@ -1,75 +1,69 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
-
-# container_scanning:
-#   variables:
-#     DOCKER_IMAGE: ...
-#     DOCKER_USER: ...
-#     DOCKER_PASSWORD: ...
 stages:
-- test
-- deploy
-services:
-- name: postgres:15.4
+  - test
+  - deploy
+
 variables:
-  POSTGRES_DB: "$APP_DB_NAME"
-  POSTGRES_USER: "$APP_DB_USER"
-  POSTGRES_PASSWORD: "$APP_DB_PASS"
+  POSTGRES_DB: '$APP_DB_NAME'
+  POSTGRES_USER: '$APP_DB_USER'
+  POSTGRES_PASSWORD: '$APP_DB_PASS'
   POSTGRES_HOST_AUTH_METHOD: trust
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Code-Quality.gitlab-ci.yml
+
+services:
+  - name: postgres:15.4
+
 lint-format-test:
   stage: test
+  image: python:3.11
   script:
-  - apt-get update -qy
-  - apt-get install -y python3.11
-  - curl -sSL https://pdm-project.org/install-pdm.py | python3 -
-  - export PATH=/root/.local/bin:$PATH
-  - pdm install --dev
-  - apt-get install -y postgresql-client
-  - pip install pre-commit
-  - pre-commit run --all-files
+    - apt-get update -qy
+    - apt-get install -y python3.11
+    - curl -sSL https://pdm-project.org/install-pdm.py | python3 -
+    - export PATH=/root/.local/bin:$PATH
+    - pdm install --dev
+    - apt-get install -y postgresql-client
+    - pip install pre-commit
+    - pre-commit run --all-files
+
+sast:
+  stage: test
+
+code_quality:
+  services:
+
 deploy-job:
   stage: deploy
   environment: production
   only:
-  - master
+    - master
   script:
-  - echo "Deploying application..."
-  - mkdir -p ~/.ssh
-  - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-  - chmod 600 ~/.ssh/id_rsa
-  - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
-  - ssh $SSH_USER@$SSH_HOST "cd app && git pull origin master && docker-compose up
-    -d --build"
-  - running_containers=$(ssh $SSH_USER@$SSH_HOST "docker ps --format '{{.Names}}'")
-  - expected_containers=("app-nginx-1" "app-backend-1" "app-celery-1" "app-postgres-1"
-    "app-redis-1")
-  - sleep 2
-  - |
-    for container in "${expected_containers[@]}"; do
-      if [[ "$running_containers" != *"$container"* ]]; then
-        echo "Error: Container $container is not running."
-        exit 1
-      fi
-    done
-  - echo "Application successfully deployed with the expected containers."
-  - |
-    curl -s \
-      -X POST \
-      https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage \
-      -d "chat_id=$TELEGRAM_CHAT_ID" \
-      -d "text=[Webmaster Helper] Deployment to production was successful."
-sast:
-  stage: test
-include:
-- template: Security/SAST.gitlab-ci.yml
-- template: Security/Secret-Detection.gitlab-ci.yml
-- template: Security/Dependency-Scanning.gitlab-ci.yml
-- template: Jobs/Code-Quality.gitlab-ci.yml
-
-code_quality:
-  services:
+    - echo "Deploying application..."
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+    - ssh $SSH_USER@$SSH_HOST "cd app && git pull origin master && docker-compose up
+      -d --build"
+    - running_containers=$(ssh $SSH_USER@$SSH_HOST "docker ps --format '{{.Names}}'")
+    - expected_containers=("app-nginx-1" "app-backend-1" "app-celery-1" "app-postgres-1"
+      "app-redis-1")
+    - sleep 2
+    - |
+      for container in "${expected_containers[@]}"; do
+        if [[ "$running_containers" != *"$container"* ]]; then
+          echo "Error: Container $container is not running."
+          exit 1
+        fi
+      done
+    - echo "Application successfully deployed with the expected containers."
+    - |
+      curl -s \
+        -X POST \
+        https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage \
+        -d "chat_id=$TELEGRAM_CHAT_ID" \
+        -d "text=[Webmaster Helper] Deployment to production was successful."
