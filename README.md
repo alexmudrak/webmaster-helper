@@ -64,7 +64,7 @@ ALLOWED_HOSTS=            # Allowed hosts for BE
 APP_ALLOWED_URLS=         # Allowed request URL for CORS
 APP_SECRET_KEY=           # IMPORTANT: Encryption secret key
 
-#FRONTEND
+# FRONTEND
 API_URL=                  # Url of BE service
 
 # DATABASE
