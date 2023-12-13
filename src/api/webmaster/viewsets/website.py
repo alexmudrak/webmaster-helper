@@ -220,12 +220,13 @@ class WebsiteViewSet(AbstractViewSet):
                 result.publish_date = publish_page_date
                 result.save()
             else:
-                PublishPage.objects.create(
-                    website=website,
-                    url=publish_page_url,
+                result, _ = PublishPage.objects.get_or_create(
                     project=project,
-                    publish_date=publish_page_date,
+                    url=publish_page_url,
                 )
+                result.website = website
+                result.publish_date = publish_page_date
+                result.save()
 
     def update_webmasters(self, website, webmasters_list, owner):
         if webmasters_list:
