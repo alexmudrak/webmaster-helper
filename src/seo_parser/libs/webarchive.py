@@ -37,7 +37,5 @@ class WebArchive(SeoSite):
                 self.url.format(url),
                 headers={"Referer": "http://web.archive.org/web/*/" + url},
             )
-            self.value = (
-                response.json() if response.status_code == 200 else None
-            )
+            self.value = response.json() if response.status_code == 200 else {}
         return self
