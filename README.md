@@ -42,7 +42,7 @@ the webmaster's site.
 Experience enhanced efficiency and control in your webmaster collaborations
 with Webmaster Helper.
 
-## Tools Requirment
+## Tools Requirement
 
 - git
 - docker
@@ -107,7 +107,7 @@ You Awesome !
 
 ## Tech stack
 
-| Backent | Frontend |
+| Backend | Frontend |
 |---------|----------|
 | Django + DRF | React + Typescript (Vite) |
 | PostgreSQL |Bootstrap  |
