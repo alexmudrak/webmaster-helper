@@ -16,6 +16,7 @@ FROM node:18 AS frontend
 WORKDIR /frontend
 
 COPY ui/package*.json ./
+RUN npm install -g npm@10.5.0
 RUN npm install
 
 COPY ui/ .

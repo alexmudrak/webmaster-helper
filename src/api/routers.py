@@ -30,14 +30,14 @@ router.register(r"auth/logout", LogoutViewSet, basename="auth-logout")
 router.register(r"project", ProjectViewSet, basename="project")
 # Webmaster
 router.register(r"webmaster", WebmasterViewSet, basename="webmaster")
-router.register(r"contact", ContactViewSet, basename="webmaster")
-router.register(r"messages", ContactHistoryViewSet, basename="webmaster")
-router.register(r"payment", PaymentViewSet, basename="webmaster")
+router.register(r"contact", ContactViewSet, basename="contact")
+router.register(r"messages", ContactHistoryViewSet, basename="messages")
+router.register(r"payment", PaymentViewSet, basename="payment")
 router.register(
-    r"payment-history", PaymentHistoryViewSet, basename="webmaster"
+    r"payment-history", PaymentHistoryViewSet, basename="payment-history"
 )
-router.register(r"publish-pages", PublishPageViewSet, basename="webmaster")
-router.register(r"url", WebsiteViewSet, basename="webmaster")
+router.register(r"publish-pages", PublishPageViewSet, basename="publish-pages")
+router.register(r"url", WebsiteViewSet, basename="url")
 # Mail-box
 router.register(r"mails", MailBoxViewSet, basename="mail")
 # Tasks
